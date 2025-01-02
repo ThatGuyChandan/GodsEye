@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Violence Detection</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Violence Detection</h1>
+
+    <!-- Dark Mode Toggle Switch -->
+    <label class="switch">
+      <input type="checkbox" id="darkModeToggle" />
+      <span class="slider"></span>
+    </label>
+
+    <!-- Image Upload Section -->
+    <div id="file-upload-section">
+      <h2>Upload an Image or Video</h2>
+      <input type="file" id="fileInput" />
+      <button id="uploadButton">Upload</button>
+      <div id="loading" class="hidden">Processing...</div>
+      <div id="prediction"></div>
+    </div>
+
+    <hr />
+
+    <!-- Webcam Section -->
+    <div id="webcam-section">
+      <h2>Live Webcam Predictions</h2>
+      <video id="webcam" autoplay playsinline></video>
+      <button id="startWebcam">Start Webcam</button>
+      <button id="stopWebcam" class="hidden">Stop Webcam</button>
+      <div id="webcamPrediction"></div>
+    </div>
+
+    <hr />
+
+    <script src="script.js"></script>
+  </body>
+</html>
