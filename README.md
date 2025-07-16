@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Violence Detection System
 
 ## Overview
@@ -6,6 +5,7 @@ This project is a full-stack violence and anomaly detection system using deep le
 - **Backend:** Python Flask API for predictions and Telegram alerts (with live location)
 - **Frontend:** React app for uploading images/videos and live webcam predictions
 - **Alerting:** Sends Telegram alerts (with live location) for dangerous scenarios
+- **Modern UI/UX:** Tabbed interface for easy switching between Upload and Live Webcam screens
 
 ---
 
@@ -14,7 +14,7 @@ This project is a full-stack violence and anomaly detection system using deep le
 - Multi-label output: returns all relevant scenarios above a confidence threshold
 - Sends Telegram alerts (with live location) for dangerous events
 - Cooldown logic to avoid alert spamming
-- Modern React frontend for easy use
+- Modern React frontend with tabbed navigation and beautiful design
 
 ---
 
@@ -61,6 +61,10 @@ Create a `.env` file in `backend/` with:
 ```
 TELEGRAM_BOT_TOKEN=your_bot_token
 TELEGRAM_CHAT_ID=your_chat_id
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_DEFAULT_REGION=your_region
+S3_BUCKET_NAME=your_bucket_name
 ```
 
 #### d. Run the Backend Server
@@ -81,10 +85,12 @@ npm start
 ---
 
 ## How It Works
+- **Tabbed UI:** Easily switch between "Upload" (for image/video) and "Live Webcam" screens using the modern tab switcher at the top.
 - **Image/Video Upload:** Upload an image or video for violence/anomaly detection. The backend returns all detected scenarios above the confidence threshold.
 - **Live Webcam:** Start the webcam for real-time predictions. The frontend sends frames (and your live location) to the backend every second.
 - **Telegram Alerts:** If a dangerous scenario is detected (e.g., fire, fight, car crash), the backend sends a Telegram alert (with your live location if available). Alerts for the same event are rate-limited (default: 1 per minute).
 - **Multi-label:** The system can detect and report multiple scenarios in a single frame (e.g., both "fire" and "car crash").
+- **Cloud Storage:** All uploads are stored temporarily in AWS S3 for analysis and deleted after use.
 
 ---
 
@@ -92,12 +98,14 @@ npm start
 - **Add/Remove Labels:** Edit `backend/settings.yaml` under `label-settings: labels:`
 - **Adjust Threshold:** Change `prediction-threshold` in `settings.yaml` for sensitivity
 - **Cooldown:** Change `COOLDOWN_SECONDS` in `backend.py` for alert frequency
+- **UI/UX:** The frontend is built with React and can be easily customized for branding, dark mode, etc.
 
 ---
 
 ## Example Usage
 - Upload an image of a burning car: get labels like `fire`, `car crash`, and receive a Telegram alert with your location.
 - Use the webcam: get live predictions and alerts only when a new event is detected.
+- Switch between Upload and Live Webcam screens with a single click.
 
 ---
 
@@ -105,48 +113,9 @@ npm start
 - Python 3.9+
 - Node.js 16+
 - Telegram bot and chat ID for alerts
+- AWS S3 bucket and credentials
 
 ---
 
 ## License
 MIT 
-=======
-# Godseye: Real-Time Violence/Fire/Crash Detection System 🚨🔥🚗
-
-**Godseye** is an AI-powered system for real-time detection of critical events such as **violence**, **fire**, and **car crashes**. Built on the **CLIP model**, the system processes live webcam feeds, uploaded images, and videos to identify potentially dangerous situations and sends instant alerts via **Telegram**.
-
----
-
-## 📌 Features
-- **Live Webcam Detection**: Analyze live video feeds for detecting critical events.
-- **Image/Video Upload**: Upload photos or videos to detect incidents with high accuracy.
-- **AI-Powered Detection**: Utilizes the **CLIP model** for advanced visual understanding.
-- **Telegram Alerts**: Instantly notify users with detailed alerts about detected incidents.
-- **Scalable API**: Backend API designed for seamless integration with other systems.
-
----
-
-## 🛠️ Technology Stack
-- **Python**: Core programming language.
-- **Flask**: Backend framework for RESTful APIs.
-- **CLIP Model**: Cutting-edge AI model for visual and textual recognition.
-- **OpenCV & Pillow**: For video/image preprocessing and handling.
-- **Telegram Bot API**: For alert notifications.
-- **YAML**: Configuration management with `settings.yaml`.
-
----
-
-## 🚀 How It Works
-1. **Webcam Detection**:
-   - Captures frames from the webcam and analyzes them in real-time.
-   - Detects critical events and sends Telegram alerts.
-
-2. **Image/Video Upload**:
-   - Accepts images or videos for batch processing.
-   - Uses the CLIP model to predict events and generate summaries.
-
-3. **Notification System**:
-   - Sends **Telegram alerts** for detected incidents, including event type and confidence score.
-
----
->>>>>>> 6336fc7485a2ddba94207ee6fce08425b60191da

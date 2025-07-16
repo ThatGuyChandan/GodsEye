@@ -8,6 +8,9 @@ import requests
 from dotenv import load_dotenv
 import os
 import time
+import boto3
+from botocore.exceptions import NoCredentialsError
+import uuid
 
 app = Flask(__name__)
 CORS(app, origins=["*"])
@@ -17,6 +20,10 @@ load_dotenv()
 
 # Initialize model
 model = Model(settings_path="./settings.yaml")
+
+# Initialize S3 client and bucket after environment variables are loaded
+s3 = boto3.client('s3')
+S3_BUCKET = os.getenv('S3_BUCKET_NAME')
 
 alert_cooldown = {}  # {label: last_alert_timestamp}
 COOLDOWN_SECONDS = 60
@@ -51,6 +58,18 @@ def send_telegram_location(chat_id, latitude, longitude, bot_token):
         print(f"Telegram API Error (location): {e}")
         return None
 
+# Helper functions for S3
+
+def upload_to_s3(file_stream, filename, content_type):
+    s3.upload_fileobj(file_stream, S3_BUCKET, filename, ExtraArgs={'ContentType': content_type})
+    return f"s3://{S3_BUCKET}/{filename}"
+
+def download_from_s3(filename, local_path):
+    s3.download_file(S3_BUCKET, filename, local_path)
+
+def delete_from_s3(filename):
+    s3.delete_object(Bucket=S3_BUCKET, Key=filename)
+
 @app.route("/")
 def index():
     return "Violence Detection Backend Running"
@@ -60,20 +79,26 @@ def predict_image():
     if "file" not in request.files:
         return jsonify({"error": "No file uploaded"}), 400
     file = request.files["file"]
-    image = Image.open(file.stream).convert("RGB")
+    filename = f"temp/{uuid.uuid4()}_{file.filename}"
+    upload_to_s3(file.stream, filename, file.content_type)
+    # Download for analysis
+    local_path = f"/tmp/{uuid.uuid4()}_{file.filename}"
+    download_from_s3(filename, local_path)
+    image = Image.open(local_path).convert("RGB")
     np_image = np.array(image)
     prediction = model.predict(image=np_image)
+    os.remove(local_path)
+    delete_from_s3(filename)
     labels = prediction.get("labels", [])
     bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
     chat_id = os.getenv("TELEGRAM_CHAT_ID")
     safe_labels = [
         "Unknown", "people walking", "buildings", "road", "cars on a road", "car parking area", "cars", "office environment", "people talking", "group of people"
     ]
-    # Send alert for each alert-worthy label
     for label_info in labels:
         label = label_info["label"]
         confidence = label_info["confidence"]
-        if label not in safe_labels and bot_token and chat_id:
+        if label not in safe_labels and bot_token and chat_id and should_send_alert(label):
             message = (
                 f"ALERT: {label.upper()} detected with confidence {confidence:.2f}. Immediate action required."
             )
@@ -85,10 +110,11 @@ def predict_video():
     if "file" not in request.files:
         return jsonify({"error": "No file uploaded"}), 400
     file = request.files["file"]
-    video_path = "./temp_video.mp4"
-    with open(video_path, "wb") as f:
-        f.write(file.read())
-    cap = cv2.VideoCapture(video_path)
+    filename = f"temp/{uuid.uuid4()}_{file.filename}"
+    upload_to_s3(file.stream, filename, file.content_type)
+    local_path = f"/tmp/{uuid.uuid4()}_{file.filename}"
+    download_from_s3(filename, local_path)
+    cap = cv2.VideoCapture(local_path)
     label_counts = {}
     total_frames = 0
     detected_alerts = set()
@@ -109,6 +135,8 @@ def predict_video():
             if label not in safe_labels and label not in detected_alerts:
                 detected_alerts.add(label)
     cap.release()
+    os.remove(local_path)
+    delete_from_s3(filename)
     summary = [
         {"label": label, "percentage": count / total_frames}
         for label, count in label_counts.items()
@@ -135,10 +163,16 @@ def predict_webcam():
         file = request.files.get('frame')
         if not file:
             return jsonify({"error": "No frame uploaded"}), 400
-        image = Image.open(file.stream).convert("RGB")
+        filename = f"temp/{uuid.uuid4()}_{file.filename}"
+        upload_to_s3(file.stream, filename, file.content_type)
+        local_path = f"/tmp/{uuid.uuid4()}_{file.filename}"
+        download_from_s3(filename, local_path)
+        image = Image.open(local_path).convert("RGB")
         np_image = np.array(image)
         latitude = request.form.get('latitude')
         longitude = request.form.get('longitude')
+        os.remove(local_path)
+        delete_from_s3(filename)
     else:
         data = request.data
         if not data:

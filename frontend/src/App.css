@@ -1,73 +1,162 @@
+.tab-switcher {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 24px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(60, 72, 100, 0.06);
+  overflow: hidden;
+}
+.tab-switcher button {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 1.08rem;
+  font-weight: 500;
+  padding: 14px 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  outline: none;
+}
+.tab-switcher button.tab-active {
+  background: linear-gradient(90deg, #6366f1 0%, #60a5fa 100%);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(60, 72, 100, 0.10);
+  border-radius: 10px;
+  z-index: 1;
+}
+.tab-switcher button:not(.tab-active):hover {
+  background: #e0e7ef;
+  color: #2563eb;
+}
+
 body {
-  background: #f7f7f7;
-  font-family: 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
   margin: 0;
   padding: 0;
+  min-height: 100vh;
 }
 
 .App {
-  max-width: 600px;
-  margin: 40px auto;
+  max-width: 480px;
+  margin: 48px auto;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-  padding: 32px 24px 24px 24px;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(60, 72, 100, 0.12);
+  padding: 36px 28px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
 h1 {
   text-align: center;
-  color: #2c3e50;
-  margin-bottom: 32px;
+  color: #1e293b;
+  margin-bottom: 18px;
+  font-size: 2.2rem;
+  letter-spacing: 1px;
 }
 
 .upload-section, .webcam-section {
-  margin-bottom: 32px;
+  background: #f1f5f9;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(60, 72, 100, 0.06);
+  padding: 24px 18px 18px 18px;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.upload-section h2, .webcam-section h2 {
+  color: #334155;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
 }
 
 input[type="file"] {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: #fff;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+input[type="file"]:focus {
+  border: 1.5px solid #6366f1;
+  outline: none;
 }
 
 button {
-  background: #1976d2;
+  background: linear-gradient(90deg, #6366f1 0%, #60a5fa 100%);
   color: #fff;
   border: none;
-  border-radius: 6px;
-  padding: 8px 20px;
-  font-size: 1rem;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-size: 1.08rem;
+  font-weight: 500;
   cursor: pointer;
   margin-right: 8px;
-  transition: background 0.2s;
-  }
-
+  margin-top: 4px;
+  box-shadow: 0 2px 8px rgba(60, 72, 100, 0.08);
+  transition: background 0.2s, transform 0.1s;
+}
 button:disabled {
-  background: #b0bec5;
+  background: #cbd5e1;
+  color: #64748b;
   cursor: not-allowed;
 }
-
 button:hover:not(:disabled) {
-  background: #1565c0;
+  background: linear-gradient(90deg, #4f46e5 0%, #2563eb 100%);
+  transform: translateY(-2px) scale(1.03);
 }
 
 .prediction {
-  background: #f1f8e9;
-  color: #333;
-  border-radius: 6px;
-  padding: 12px;
-  margin-top: 16px;
-  font-size: 1.05rem;
+  background: #e0f2fe;
+  color: #0f172a;
+  border-radius: 8px;
+  padding: 14px 12px;
+  margin-top: 10px;
+  font-size: 1.08rem;
   min-height: 32px;
   white-space: pre-line;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 1px 4px rgba(60, 72, 100, 0.06);
 }
 
 video {
-  border-radius: 8px;
-  margin-bottom: 12px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-  }
+  border-radius: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 12px rgba(60, 72, 100, 0.10);
+  background: #cbd5e1;
+  width: 100%;
+  max-width: 340px;
+  min-height: 180px;
+  object-fit: cover;
+}
 
 hr {
   border: none;
-  border-top: 1px solid #e0e0e0;
-  margin: 32px 0;
+  border-top: 1.5px solid #e2e8f0;
+  margin: 32px 0 0 0;
+}
+
+@media (max-width: 600px) {
+  .App {
+    max-width: 98vw;
+    padding: 12px 2vw 18px 2vw;
+  }
+  .upload-section, .webcam-section {
+    padding: 12px 4vw 12px 4vw;
+  }
+  video {
+    max-width: 98vw;
+  }
 }

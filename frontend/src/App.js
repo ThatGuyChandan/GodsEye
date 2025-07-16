@@ -10,6 +10,7 @@ function App() {
   const [webcamActive, setWebcamActive] = useState(false);
   const [webcamPrediction, setWebcamPrediction] = useState('');
   const [location, setLocation] = useState({ latitude: null, longitude: null });
+  const [tab, setTab] = useState('upload'); // 'upload' or 'live'
   const videoRef = useRef(null);
   const webcamStreamRef = useRef(null);
   const webcamIntervalRef = useRef(null);
@@ -151,30 +152,43 @@ function App() {
     }
   };
 
+  // Tab switch: stop webcam if leaving live tab
+  React.useEffect(() => {
+    if (tab !== 'live') stopWebcam();
+    // eslint-disable-next-line
+  }, [tab]);
+
   return (
     <div className="App">
       <h1>Violence Detection</h1>
-      <div className="upload-section">
-        <h2>Upload Image or Video</h2>
-        <input type="file" accept="image/*,video/*" onChange={handleFileChange} />
-        <button onClick={handleUpload} disabled={!file || loading}>
-          {loading ? 'Processing...' : 'Upload'}
-        </button>
-        <pre className="prediction">{prediction}</pre>
+      <div className="tab-switcher">
+        <button className={tab === 'upload' ? 'tab-active' : ''} onClick={() => setTab('upload')}>Upload</button>
+        <button className={tab === 'live' ? 'tab-active' : ''} onClick={() => setTab('live')}>Live Webcam</button>
       </div>
-      <hr />
-      <div className="webcam-section">
-        <h2>Live Webcam Predictions</h2>
-        <video ref={videoRef} width={320} height={240} autoPlay muted style={{ display: webcamActive ? 'block' : 'none' }} />
-        <div>
-          {!webcamActive ? (
-            <button onClick={startWebcam}>Start Webcam</button>
-          ) : (
-            <button onClick={stopWebcam}>Stop Webcam</button>
-          )}
+      {tab === 'upload' && (
+        <div className="upload-section">
+          <h2>Upload Image or Video</h2>
+          <input type="file" accept="image/*,video/*" onChange={handleFileChange} />
+          <button onClick={handleUpload} disabled={!file || loading}>
+            {loading ? 'Processing...' : 'Upload'}
+          </button>
+          <pre className="prediction">{prediction}</pre>
         </div>
-        <pre className="prediction">{webcamPrediction}</pre>
-      </div>
+      )}
+      {tab === 'live' && (
+        <div className="webcam-section">
+          <h2>Live Webcam Predictions</h2>
+          <video ref={videoRef} width={320} height={240} autoPlay muted style={{ display: webcamActive ? 'block' : 'none' }} />
+          <div>
+            {!webcamActive ? (
+              <button onClick={startWebcam}>Start Webcam</button>
+            ) : (
+              <button onClick={stopWebcam}>Stop Webcam</button>
+            )}
+          </div>
+          <pre className="prediction">{webcamPrediction}</pre>
+        </div>
+      )}
     </div>
   );
 }
