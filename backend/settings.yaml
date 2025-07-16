@@ -1,0 +1,20 @@
+model-settings:
+  prediction-threshold: 0.23
+  model-name: "ViT-B/32"
+  device: "cpu"
+label-settings:
+  labels:
+    - "people walking"
+    - "buildings"
+    - "fight"
+    - "fire"
+    - "street violence"
+    - "road"
+    - "car crash"
+    - "cars on a road"
+    - "car parking area"
+    - "cars"
+    - "office environment"
+    - "people talking"
+    - "group of people"
+  default-label: "Unknown"

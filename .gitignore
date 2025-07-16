@@ -1,2 +1,25 @@
 .env
-data
+data/
+# Python
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/*.pyo
+backend/*.pyd
+backend/.env
+backend/.DS_Store
+backend/.ipynb_checkpoints/
+backend/temp_video.mp4
+# Node/React
+frontend/node_modules/
+frontend/.env
+frontend/build/
+frontend/.DS_Store
+# OS/Editor files
+.DS_Store
+Thumbs.db
+# Logs
+*.log
+# Misc
+*.swp
+*.swo

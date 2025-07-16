@@ -1,87 +1,111 @@
-# Table of Contents
+# Violence Detection System
 
-[Introduction](#introduction)
+## Overview
+This project is a full-stack violence and anomaly detection system using deep learning (CLIP) for image/video/webcam analysis. It features:
+- **Backend:** Python Flask API for predictions and Telegram alerts (with live location)
+- **Frontend:** React app for uploading images/videos and live webcam predictions
+- **Alerting:** Sends Telegram alerts (with live location) for dangerous scenarios
 
-[How to Run](#howtorun)
+---
 
-[Resutls](#results)
+## Features
+- Detects violence, fire, car crash, street violence, and more in images, videos, and live webcam
+- Multi-label output: returns all relevant scenarios above a confidence threshold
+- Sends Telegram alerts (with live location) for dangerous events
+- Cooldown logic to avoid alert spamming
+- Modern React frontend for easy use
 
-[Further Work](#work)
-<a name="introduction"/>
+---
 
-# Introduction
-
-This repo presents code for Deep Learning based algorithm for
-**detecting violence** in indoor or outdoor environments. The algorithm can
-detect following scenarios with high accuracy: fight, fire, car crash and even
-more.
-
-To detect other scenarios you have to add **descriptive text label** of a
-scenario in `settings.yaml` file under `labels` key. At this moment model can
-detect 16`+1` scenarios, where one is default `Unknown` label. You can change,
-add or remove labels according to your use case. The model is trained on wide
-variety of data. The task for the model at training was to predict similar
-vectors for image and text that describes well a scene on the image. Thus model
-can generalize well on other scenarios too if you provide proper textual
-information about a scene of interest.
-<a name="howtorun"/>
-
-# How to Run
-
-First install requirements:
-`pip install -r requirements.txt`
-
-To test the model you can either run:
-`python run.py --image-path ./data/7.jpg`
-
-Or you can test it through web app:
-`streamlit run app.py`
-
-Or you can see the example code in `tutorial.ipynb` jupyter notebook
-
-Or incorporate this model in your project using this code:
-
-```python
-from model import Model
-import cv2
-
-model = Model()
-image = cv2.imread('./your_image.jpg')
-image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-label = model.predict(image=image)['label']
-print('Image label is: ', label)
+## Project Structure
+```
+godsEye/
+  backend/
+    backend.py           # Flask API
+    model.py             # CLIP-based model logic
+    settings.yaml        # Model and label configuration
+    requirements.txt     # Python dependencies
+    venv/                # Python virtual environment
+  frontend/
+    ...                  # React app (src/, public/, etc.)
+  README.md
 ```
 
-<a name="results"></a>
+---
 
-# Results
+## Setup Instructions
 
-Below are the resulting videos and images. I used the model to make predictions
-on each frame of the videos and print model's predictions on the left side of
-frame of saved videos. In case of images, titles are model's predictions. You
-can find code that produces that result in `tutorial.ipynb` jupyter notebook.
+### 1. Clone the Repository
+```sh
+git clone <repo-url>
+cd godsEye
+```
 
-![Result video](./results/output_fire.gif)
+### 2. Backend Setup
+#### a. Create and Activate Virtual Environment (Python 3.9 recommended)
+```sh
+cd backend
+python3.9 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-![Result video](./results/output_fight.gif)
+#### b. Install Dependencies
+```sh
+pip install --upgrade pip
+pip install -r requirements.txt
+```
 
-### Result Images
+#### c. Configure Environment Variables
+Create a `.env` file in `backend/` with:
+```
+TELEGRAM_BOT_TOKEN=your_bot_token
+TELEGRAM_CHAT_ID=your_chat_id
+```
 
-![Result image](./results/3.jpg)
-![Result image](./results/9.jpg)
-![Result image](./results/2.jpg)
-![Result image](./results/4.jpg)
-![Result image](./results/10.jpg)
-![Result image](./results/7.jpg)
-![Result image](./results/0.jpg)
+#### d. Run the Backend Server
+```sh
+FLASK_APP=backend.py flask run --host=0.0.0.0 --port=5000
+```
 
-<a name="work"></a>
+---
 
-# Further Work
+### 3. Frontend Setup
+```sh
+cd ../frontend
+npm install
+npm start
+```
+- The React app will run on [http://localhost:3000](http://localhost:3000)
 
-For further enhancements like: Batch processing support for speedup, return of
-multiple suggestions, threshold fine-tuning for specific data, ect. contact me:
+---
 
-My
-Linkedin: [Soso Sukhitashvili](https://www.linkedin.com/in/soso-sukhitashvili/)
+## How It Works
+- **Image/Video Upload:** Upload an image or video for violence/anomaly detection. The backend returns all detected scenarios above the confidence threshold.
+- **Live Webcam:** Start the webcam for real-time predictions. The frontend sends frames (and your live location) to the backend every second.
+- **Telegram Alerts:** If a dangerous scenario is detected (e.g., fire, fight, car crash), the backend sends a Telegram alert (with your live location if available). Alerts for the same event are rate-limited (default: 1 per minute).
+- **Multi-label:** The system can detect and report multiple scenarios in a single frame (e.g., both "fire" and "car crash").
 
+---
+
+## Customization
+- **Add/Remove Labels:** Edit `backend/settings.yaml` under `label-settings: labels:`
+- **Adjust Threshold:** Change `prediction-threshold` in `settings.yaml` for sensitivity
+- **Cooldown:** Change `COOLDOWN_SECONDS` in `backend.py` for alert frequency
+
+---
+
+## Example Usage
+- Upload an image of a burning car: get labels like `fire`, `car crash`, and receive a Telegram alert with your location.
+- Use the webcam: get live predictions and alerts only when a new event is detected.
+
+---
+
+## Requirements
+- Python 3.9+
+- Node.js 16+
+- Telegram bot and chat ID for alerts
+
+---
+
+## License
+MIT 
